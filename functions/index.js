@@ -12,18 +12,19 @@ exports.statistics = functions.https.onRequest((req, res) => {
   if (!(uuid != null && name != null && isOnline != null)) {
     // invalid params
     res.send("{status: false}")
+    return
   }
 
-  var db = admin.database();
+  var db = admin.firestore();
 
-  var userRef = db.ref("/users").child(uuid)
-  userRef.set({
+  const userRef = db.collection('users').doc(uuid);
+  const setUser = userRef.set({
     uuid: uuid,
     name: name,
     isOnline: isOnline
   })
 
-  var statisticsRef = db.ref("/statistics").child(uuid) 
+  var statisticsRef = db.collection('statistics').doc(uuid);
   statisticsRef.set(statistics)
 
   res.send("{status: true}")
