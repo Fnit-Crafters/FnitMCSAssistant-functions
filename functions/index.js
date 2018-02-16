@@ -21,7 +21,8 @@ exports.statistics = functions.https.onRequest((req, res) => {
   const setUser = userRef.set({
     uuid: uuid,
     name: name,
-    isOnline: isOnline
+    isOnline: isOnline,
+    lastLogin: new Date()
   })
 
   var statisticsRef = db.collection('statistics').doc(uuid);
