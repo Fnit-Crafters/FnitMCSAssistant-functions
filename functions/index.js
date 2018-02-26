@@ -15,9 +15,17 @@ exports.statistics = functions.https.onRequest((req, res) => {
     return
   }
 
+  storeOnFireStore(uuid, name, isOnline, statistics)
+  storeOnRDB(uuid, name, isOnline, statistics)
+
+  res.send("{status: true}")
+});
+
+// set user data to firestore
+function storeOnFireStore(uuid, name, isOnline, statistics) {
   var db = admin.firestore();
 
-  const userRef = db.collection('users').doc(uuid);
+  const userRef = db.collection('users').doc(uuid)
   const setUser = userRef.set({
     uuid: uuid,
     name: name,
@@ -27,6 +35,20 @@ exports.statistics = functions.https.onRequest((req, res) => {
 
   var statisticsRef = db.collection('statistics').doc(uuid);
   statisticsRef.set(statistics)
+}
 
-  res.send("{status: true}")
-});
+// set user data to firebase
+function storeOnRDB(uuid, name, isOnline, statistics) {
+  var db = admin.database();
+
+  const userRef = db.ref("/users").child(uuid)
+  const setUser = userRef.set({
+    uuid: uuid,
+    name: name,
+    isOnline: isOnline,
+    lastLogin: new Date()
+  })
+
+  const statisticsRef = db.ref("/statistics").child(uuid) 
+  statisticsRef.set(statistics)
+}
